@@ -15,93 +15,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Google\Cloud\Samples\Dlp;
+namespace Google\Cloud\Samples\Iot;
 
 require __DIR__ . '/vendor/autoload.php';
 
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 $application = new Application('Cloud IOT');
 
-$application->add(new Command('inspect-string'))
-    ->addArgument('string', InputArgument::REQUIRED, 'The text to inspect')
-    ->setDescription('Inspect a string using the Data Loss Prevention (IOT) API.')
+$application->add(new Command('list_devices'))
+    ->addArgument('registry', InputArgument::REQUIRED, 'the registry ID')
+    ->addOption('project', '', InputOption::VALUE_REQUIRED, 'The Google Cloud project ID')
+    ->addOption('location', '', InputOption::VALUE_REQUIRED, 'The location of your device registry', 'us-central1')
+    ->setDescription('List all devices in the registry.')
     ->setCode(function ($input, $output) {
-        inspect_string(
-            $input->getArgument('string')
+        list_devices(
+            $input->getArgument('registry'),
+            $input->getOption('project'),
+            $input->getOption('location')
         );
     });
 
-$application->add(new Command('inspect-file'))
-    ->addArgument('path', InputArgument::REQUIRED, 'The file path to inspect')
-    ->setDescription('Inspect a file using the Data Loss Prevention (IOT) API.')
+$application->add(new Command('list_registries'))
+    ->addOption('project', '', InputOption::VALUE_REQUIRED, 'The Google Cloud project ID', getenv('GCLOUD_PROJECT'))
+    ->addOption('location', '', InputOption::VALUE_REQUIRED, 'The location of your device registries', 'us-central1')
+    ->setDescription('List all registries in the project.')
     ->setCode(function ($input, $output) {
-        inspect_file(
-            $input->getArgument('path')
-        );
-    });
-
-$application->add(new Command('inspect-datastore'))
-    ->addArgument('kind', InputArgument::REQUIRED, 'The Datastore kind to inspect')
-    ->addArgument('namespace', InputArgument::OPTIONAL, 'The Datastore Namespace ID to inspect')
-    ->addArgument('project', InputArgument::OPTIONAL, 'The GCP Project ID for the Datastore call')
-    ->setDescription('Inspect Cloud Datastore using the Data Loss Prevention (IOT) API.')
-    ->setCode(function ($input, $output) {
-        inspect_datastore(
-            $input->getArgument('kind'),
-            (string) $input->getArgument('namespace'),
-            (string) $input->getArgument('project')
-        );
-    });
-
-$application->add(new Command('inspect-bigquery'))
-    ->addArgument('dataset', InputArgument::REQUIRED, 'The ID of the dataset to inspect')
-    ->addArgument('table', InputArgument::REQUIRED, 'The ID of the table to inspect')
-    ->addArgument('project', InputArgument::OPTIONAL, 'The GCP Project ID to run the API call under')
-    ->setDescription('Inspect a BigQuery table using the Data Loss Prevention (IOT) API.')
-    ->setCode(function ($input, $output) {
-        inspect_bigquery(
-            $input->getArgument('dataset'),
-            $input->getArgument('table'),
-            $input->getArgument('project')
-        );
-    });
-
-$application->add(new Command('list-info-types'))
-    ->addArgument('category',
-        InputArgument::OPTIONAL,
-        'The category for the info types')
-    ->addArgument('language-code', InputArgument::OPTIONAL, 'The text to inspect', '')
-    ->setDescription('Lists all Info Types for the Data Loss Prevention (IOT) API.')
-    ->setCode(function ($input, $output) {
-        list_info_types(
-            $input->getArgument('category'),
-            $input->getArgument('language-code')
-        );
-    });
-
-$application->add(new Command('list-categories'))
-    ->addArgument('language-code', InputArgument::OPTIONAL, 'The text to inspect', '')
-    ->setDescription('Lists all Info Type Categories for the Data Loss Prevention (IOT) API.')
-    ->setCode(function ($input, $output) {
-        list_categories(
-            $input->getArgument('language-code')
-        );
-    });
-
-$application->add(new Command('redact-string'))
-    ->addArgument('string', InputArgument::REQUIRED, 'The text to inspect')
-    ->addArgument('replace-string',
-        InputArgument::OPTIONAL,
-        'The text to replace the sensitive content with',
-        'xxx')
-    ->setDescription('Redact sensitive data from a string using the Data Loss Prevention (IOT) API.')
-    ->setCode(function ($input, $output) {
-        redact_string(
-            $input->getArgument('string'),
-            $input->getArgument('replace-string')
+        list_registries(
+            $input->getOption('project'),
+            $input->getOption('location')
         );
     });
 

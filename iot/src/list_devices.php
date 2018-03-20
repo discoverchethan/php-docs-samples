@@ -15,70 +15,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Google\Cloud\Samples\Dlp;
+namespace Google\Cloud\Samples\Iot;
 
-# [START dlp_list_devices]
-use Google\Cloud\Dlp\V2beta1\DlpServiceClient;
-use Google\Cloud\Dlp\V2beta1\ContentItem;
-use Google\Cloud\Dlp\V2beta1\InfoType;
-use Google\Cloud\Dlp\V2beta1\InspectConfig;
-use Google\Cloud\Dlp\V2beta1\Likelihood;
+# [START iot_list_devices]
+use Google\Cloud\Iot\V1\DeviceManagerClient;
 
 /**
- * Inspect a file using the Data Loss Prevention (DLP) API.
+ * List all devices in the registry.
  *
- * @param string $path The file path to the file to inspect
+ * @param string $projectId Google Cloud project ID
+ * @param string $location (Optional) Google Cloud region
+ * @param string $registryId (Optional) Google Cloud region
  */
 function list_devices(
-    $path,
-    $minLikelihood = likelihood::LIKELIHOOD_UNSPECIFIED,
-    $maxFindings = 0)
-{
+    $registryId,
+    $projectId = null,
+    $location = 'us-central1'
+) {
+    print('Listing devices' . PHP_EOL);
+
     // Instantiate a client.
-    $dlp = new DlpServiceClient();
+    $deviceManager = new DeviceManagerClient();
+    $registryPath = $deviceManager->registryName($projectId, $location, $registryId);
 
-    // The infoTypes of information to match
-    $usMaleNameInfoType = new InfoType();
-    $usMaleNameInfoType->setName('US_MALE_NAME');
-    $usFemaleNameInfoType = new InfoType();
-    $usFemaleNameInfoType->setName('US_FEMALE_NAME');
-    $infoTypes = [$usMaleNameInfoType, $usFemaleNameInfoType];
+    $response = $deviceManager->listDevices($registryPath);
 
-    // Whether to include the matching string in the response
-    $includeQuote = true;
-
-    // Create the configuration object
-    $inspectConfig = new InspectConfig();
-    $inspectConfig->setMinLikelihood($minLikelihood);
-    $inspectConfig->setMaxFindings($maxFindings);
-    $inspectConfig->setInfoTypes($infoTypes);
-    $inspectConfig->setIncludeQuote($includeQuote);
-
-    // Construct file data to inspect
-    $content = new ContentItem();
-    $content->setType(mime_content_type($path) ?: 'application/octet-stream');
-    $content->setData(file_get_contents($path));
-
-    // Run request
-    $response = $dlp->inspectContent($inspectConfig, [$content]);
-
-    $likelihoods = ['Unknown', 'Very unlikely', 'Unlikely', 'Possible',
-                    'Likely', 'Very likely'];
-
-    // Print the results
-    $findings = $response->getResults()[0]->getFindings();
-    if (count($findings) == 0) {
-        print('No findings.' . PHP_EOL);
-    } else {
-        print('Findings:' . PHP_EOL);
-        foreach ($findings as $finding) {
-            if ($includeQuote) {
-                print('  Quote: ' . $finding->getQuote() . PHP_EOL);
-            }
-            print('  Info type: ' . $finding->getInfoType()->getName() . PHP_EOL);
-            $likelihoodString = $likelihoods[$finding->getLikelihood()];
-            print('  Likelihood: ' . $likelihoodString . PHP_EOL);
-        }
+    foreach ($response->getDevices() as $device) {
+        printf('Device: %s : %s',
+            $device->getNumId(),
+            $device->getId());
     }
 }
-# [END dlp_list_devices]
+# [END iot_list_devices]

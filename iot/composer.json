@@ -2,31 +2,36 @@
     "name": "google/iot-sample",
     "type": "project",
     "require": {
-        "google/cloud-iot": "^0.5",
+        "google/cloud": "dev-add-iot",
+        "google/gax": "dev-master as 0.30.2",
         "symfony/console": "^3.3"
     },
+    "minimum-stability": "dev",
+    "repositories": [
+        {
+            "url": "https://github.com/michaelbausor/gcloud-php.git",
+            "type": "vcs"
+        }
+    ],
     "autoload": {
         "files": [
-            "src/create_iot_topic.php",
-            "src/get_client.php",
-            "src/create_rs256_device.php",
-            "src/create_es256_device.php",
+            "src/create_es_device.php",
+            "src/create_registry.php",
+            "src/create_rsa_device.php",
             "src/create_unauth_device.php",
             "src/delete_device.php",
             "src/delete_registry.php",
+            "src/get_iam_policy.php",
             "src/get_device.php",
-            "src/get_state.php",
+            "src/get_device_state.php",
+            "src/get_device_configs.php",
+            "src/get_registry.php",
             "src/list_devices.php",
             "src/list_registries.php",
-            "src/create_registry.php",
-            "src/get_registry.php",
-            "src/open_registry.php",
-            "src/patch_es256_auth.php",
-            "src/patch_rsa256_auth.php",
-            "src/set_config.php",
-            "src/get_config_versions.php",
-            "src/get_iam_permissions.php",
-            "src/set_iam_permissions.php"
+            "src/patch_es.php",
+            "src/patch_rsa.php",
+            "src/set_device_config.php",
+            "src/set_iam_policy.php"
         ]
     },
     "require-dev": {
